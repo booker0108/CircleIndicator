@@ -179,13 +179,13 @@ public class CircleIndicator extends LinearLayout implements OnPageChangeListene
         if (count <= 0) {
             return;
         }
-        addIndicator(mIndicatorBackgroundResId, mAnimationOut);
+        addIndicator(mIndicatorBackgroundResId, mAnimationOut, 0);
         for (int i = 1; i < count; i++) {
-            addIndicator(mIndicatorUnselectedBackgroundResId, mAnimationIn);
+            addIndicator(mIndicatorUnselectedBackgroundResId, mAnimationIn, i);
         }
     }
 
-    private void addIndicator(@DrawableRes int backgroundDrawableId, Animator animator) {
+    private void addIndicator(@DrawableRes int backgroundDrawableId, Animator animator, int position) {
         if (animator.isRunning()) animator.end();
 
         View Indicator = new View(getContext());
@@ -198,7 +198,22 @@ public class CircleIndicator extends LinearLayout implements OnPageChangeListene
 
         animator.setTarget(Indicator);
         animator.start();
+        
+        //add position as tag to indicator
+        Indicator.setTag(position);
+        Indicator.setOnClickListener(onIndicatorClickListener)
     }
+    
+    private View.OnClickListener onIndicatorClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            //get indicator position
+            int position = (int)view.getTag();
+            
+            //smooth scroll to target page
+            mViewpager.setCurrentItem(position, true);
+        }
+    };
 
     private class ReverseInterpolator implements Interpolator {
         @Override public float getInterpolation(float value) {
